@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id),M=StudyMath,fmt=n=>Math.abs(n)<.0005?'0':Number(n.toFixed(2)).toString(),math=s=>'<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow>'+s+'</mrow></math>',mi=(s,key=s)=>symbolMarkup(s,key),mn=n=>'<mn>'+fmt(n)+'</mn>',mo=s=>'<mo>'+s+'</mo>',sub=(s,a)=>symbolMarkup(s+'_'+a,s+'_'+a,'<msub><mi>'+s+'</mi><mi>'+a+'</mi></msub>'),fraction=(a,b)=>'<mfrac><mrow>'+a+'</mrow><mrow>'+b+'</mrow></mfrac>';
 let state={a:120,alpha:30,b:90,beta:120};let practice={a:100,alpha:0,b:100,beta:90},hintLevel=0,solved=false;
-function showView(name){document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===name));if(name==='reference')renderReference();}
+function showView(name){if(window.examInProgress&&name!=='assessment')return;document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===name));if(name==='reference')renderReference();}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));$('toPractice').onclick=()=>showView('practice');
 function symbolMarkup(label,key,body){
  const info=Learning.symbols[key];
