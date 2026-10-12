@@ -26,5 +26,13 @@
   const unit=displacement.map(value=>value/length),components=unit.map(value=>force*value),angles=unit.map(value=>Math.acos(Math.max(-1,Math.min(1,value)))*180/Math.PI);
   return {displacement,length,unit,force:components,angles};
  }
- const api={parse,evaluate,markup,esc,resultant,directedForce};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
+ function checkVector(value){if(!Array.isArray(value)||value.length!==3||!value.every(Number.isFinite))throw Error('Enter three finite Cartesian components.');}
+ function dot(a,b){checkVector(a);checkVector(b);return a.reduce((sum,value,index)=>sum+value*b[index],0);}
+ function projection(force,axis){
+  checkVector(force);checkVector(axis);const axisLength=Math.hypot(...axis),forceLength=Math.hypot(...force);
+  if(!axisLength)throw Error('The axis direction is zero. Give it a nonzero direction.');
+  const unit=axis.map(value=>value/axisLength),scalar=dot(force,unit),parallel=unit.map(value=>scalar*value),perpendicular=force.map((value,index)=>value-parallel[index]),angle=forceLength?Math.acos(Math.max(-1,Math.min(1,scalar/forceLength)))*180/Math.PI:null;
+  return {axisLength,forceLength,unit,scalar,parallel,perpendicular,angle};
+ }
+ const api={parse,evaluate,markup,esc,resultant,directedForce,dot,projection};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
 })(typeof window!=='undefined'?window:globalThis);

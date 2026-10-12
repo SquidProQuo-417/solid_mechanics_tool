@@ -6,4 +6,6 @@ Includes a 2D force playground, component solutions, original guided practice, a
 
 This is not TI firmware. Resultant-practice completion stays in browser-local storage; it does not sync between devices. Textbook questions/answers and moment lessons are not yet included.
 
+Force projections accept 3D force and axis components, normalize the axis, and show the signed scalar, parallel vector, perpendicular remainder, and included angle. Reversing the positive axis preserves the vector projection. Practice includes positive, negative, perpendicular, and 3D examples. Zero-axis directions are rejected; zero-force angles are undefined.
+
 Run `node check.cjs`, `node check-ui.cjs`, `node check-position.cjs`, and `node --check dist/position.js` for numerical, rendering, and syntax checks. Rendering checks use a simulated DOM and do not verify real browser layout or touch behavior.
