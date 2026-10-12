@@ -40,5 +40,14 @@
   const arm=forceLength?magnitude/forceLength:null,forceUnit=forceLength?force.map(v=>v/forceLength):null,foot=forceUnit?point.map((v,i)=>v-dot(r,forceUnit)*forceUnit[i]):null;
   return {r,components,magnitude,rLength,forceLength,direction,angle,arm,foot,forceUnit};
  }
- const api={parse,evaluate,markup,esc,resultant,directedForce,dot,projection,cross,moment};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
+ function axisMoment(start,end,components,reverse=false){
+  checkVector(start);checkVector(end);checkVector(components);const axis=end.map((v,i)=>(v-start[i])*(reverse?-1:1)),projected=projection(components,axis);
+  return {axis,unit:projected.unit,length:projected.axisLength,components:[...components],scalar:projected.scalar,magnitude:Math.abs(projected.scalar),parallel:projected.parallel};
+ }
+ function forceAxisMoment(start,end,point,force,reverse=false){const pointMoment=moment(start,point,force);return {...axisMoment(start,end,pointMoment.components,reverse),pointMoment};}
+ function couple(positivePoint,negativePoint,force,origin=[0,0,0]){
+  checkVector(positivePoint);checkVector(negativePoint);checkVector(force);checkVector(origin);const separation=positivePoint.map((v,i)=>v-negativePoint[i]),components=cross(separation,force),magnitude=Math.hypot(...components),forceMagnitude=Math.hypot(...force),positiveMoment=moment(origin,positivePoint,force).components,negativeForce=force.map(v=>-v),negativeMoment=moment(origin,negativePoint,negativeForce).components;
+  return {separation,components,magnitude,forceMagnitude,arm:forceMagnitude?magnitude/forceMagnitude:null,positiveMoment,negativeMoment,totalForce:force.map((v,i)=>v+negativeForce[i])};
+ }
+ const api={parse,evaluate,markup,esc,resultant,directedForce,dot,projection,cross,moment,axisMoment,forceAxisMoment,couple};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
 })(typeof window!=='undefined'?window:globalThis);
