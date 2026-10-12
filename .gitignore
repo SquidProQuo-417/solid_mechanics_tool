@@ -1,0 +1,8 @@
+# Local Sites repository metadata and generated deployment packages
+mechanics-lab/.sites-source-git/
+mechanics-lab-deploy.tar.gz
+
+# Local dependency/runtime files
+node_modules/
+.sites-runtime/
+.sites-checkout/
