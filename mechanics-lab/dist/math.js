@@ -18,5 +18,13 @@
  }
  function markup(n){if(n.kind==='num')return '<mn>'+esc(n.value)+'</mn>';if(n.kind==='id')return '<mi>'+esc(n.name==='pi'?'π':n.name)+'</mi>';if(n.kind==='group')return '<mrow><mo>(</mo>'+markup(n.n)+'<mo>)</mo></mrow>';if(n.kind==='unary')return '<mrow><mo>'+n.op+'</mo>'+markup(n.n)+'</mrow>';if(n.kind==='op'){if(n.op==='/')return '<mfrac>'+markup(n.l)+markup(n.r)+'</mfrac>';if(n.op==='^')return '<msup>'+markup(n.l)+markup(n.r)+'</msup>';return '<mrow>'+markup(n.l)+'<mo>'+({'*':'×','-':'−'}[n.op]||n.op)+'</mo>'+markup(n.r)+'</mrow>';}if(n.name==='sqrt')return '<msqrt>'+markup(n.args[0])+'</msqrt>';return '<mrow><mi>'+esc(n.name)+'</mi><mo>(</mo>'+n.args.map(markup).join('<mo>,</mo>')+'<mo>)</mo></mrow>';}
  function resultant(a,alpha,b,beta){let ax=a*Math.cos(alpha*Math.PI/180),ay=a*Math.sin(alpha*Math.PI/180),bx=b*Math.cos(beta*Math.PI/180),by=b*Math.sin(beta*Math.PI/180),x=ax+bx,y=ay+by,magnitude=Math.hypot(x,y);return {ax,ay,bx,by,x,y,magnitude,angle:magnitude<1e-9?null:(Math.atan2(y,x)*180/Math.PI+360)%360};}
- const api={parse,evaluate,markup,esc,resultant};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
+ function directedForce(start,end,force){
+  if(!Array.isArray(start)||!Array.isArray(end)||start.length!==3||end.length!==3||![...start,...end,force].every(Number.isFinite)||force<0)throw Error('Use three finite coordinates for each point and a nonnegative force magnitude.');
+  const displacement=end.map((value,index)=>value-start[index]),length=Math.hypot(...displacement);
+  if(!Number.isFinite(length))throw Error('Coordinates are too large.');
+  if(length===0)return {displacement,length,unit:null,force:null,angles:null};
+  const unit=displacement.map(value=>value/length),components=unit.map(value=>force*value),angles=unit.map(value=>Math.acos(Math.max(-1,Math.min(1,value)))*180/Math.PI);
+  return {displacement,length,unit,force:components,angles};
+ }
+ const api={parse,evaluate,markup,esc,resultant,directedForce};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
 })(typeof window!=='undefined'?window:globalThis);

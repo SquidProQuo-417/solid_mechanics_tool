@@ -8,6 +8,7 @@ function symbolMarkup(label,key,body){
  return '<mrow class="symbol-token" data-symbol="'+key+'" tabindex="0" role="button" aria-label="Explain '+M.esc(info[0])+'">'+(body||'<mi>'+M.esc(label)+'</mi>')+'</mrow>';
 }
 function vector(label,key){return '<mstyle mathvariant="bold">'+mi(label,key)+'</mstyle>';}
+function taggedVector(label,suffix,key){return symbolMarkup(label+suffix,key,'<msub><mstyle mathvariant="bold"><mi>'+label+'</mi></mstyle><mtext>'+suffix+'</mtext></msub>');}
 function solution(s){
  const r=M.resultant(s.a,s.alpha,s.b,s.beta);
  const component=(force,axis,value,angle,result)=>math(sub(force,axis)+mo('=')+mi(force)+mi(axis==='x'?'cos':'sin')+mi(force==='A'?'α':'β',force==='A'?'alpha':'beta')+mo('=')+mn(value)+mi(axis==='x'?'cos':'sin')+mo('(')+mn(angle)+mo('°)')+mo('=')+mn(result)+mi('N'));
@@ -33,6 +34,8 @@ $('hint').onclick=()=>{let hints=['Sketch both forces from the same origin. Whic
 function renderReference(){
  const square=x=>'<msup>'+x+mn(2)+'</msup>',root=x=>'<msqrt><mrow>'+x+'</mrow></msqrt>';
  const formulas={
+ position:taggedVector('r','AB','displacement')+mo('=')+taggedVector('r','B','positionB')+mo('−')+taggedVector('r','A','positionA')+mo('=')+mo('(')+mi('xB')+mo('−')+mi('xA')+mo(')')+mi('i')+mo('+')+mo('(')+mi('yB')+mo('−')+mi('yA')+mo(')')+mi('j')+mo('+')+mo('(')+mi('zB')+mo('−')+mi('zA')+mo(')')+mi('k'),
+ direction3D:mi('cos','cos3D')+mi('α','alpha3D')+mo('=')+sub('u','x')+mo(' , ')+mi('cos','cos3D')+mi('β','beta3D')+mo('=')+sub('u','y')+mo(' , ')+mi('cos','cos3D')+mi('γ','gamma3D')+mo('=')+sub('u','z'),
  components:sub('F','x')+mo('=')+mi('F')+mi('cos')+mi('θ','thetaForce')+mo(' , ')+sub('F','y')+mo('=')+mi('F')+mi('sin')+mi('θ','thetaForce'),
  cartesian:vector('F','Fvector')+mo('=')+sub('F','x')+mi('i')+mo('+')+sub('F','y')+mi('j')+mo('+')+sub('F','z')+mi('k'),
  sum:sub('R','x')+mo('=')+sub('A','x')+mo('+')+sub('B','x')+mo(' , ')+sub('R','y')+mo('=')+sub('A','y')+mo('+')+sub('B','y'),
