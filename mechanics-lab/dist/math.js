@@ -34,5 +34,11 @@
   const unit=axis.map(value=>value/axisLength),scalar=dot(force,unit),parallel=unit.map(value=>scalar*value),perpendicular=force.map((value,index)=>value-parallel[index]),angle=forceLength?Math.acos(Math.max(-1,Math.min(1,scalar/forceLength)))*180/Math.PI:null;
   return {axisLength,forceLength,unit,scalar,parallel,perpendicular,angle};
  }
- const api={parse,evaluate,markup,esc,resultant,directedForce,dot,projection};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
+ function cross(a,b){checkVector(a);checkVector(b);return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
+ function moment(origin,point,force){
+  checkVector(origin);checkVector(point);checkVector(force);const r=point.map((value,index)=>value-origin[index]),components=cross(r,force),magnitude=Math.hypot(...components),rLength=Math.hypot(...r),forceLength=Math.hypot(...force),direction=magnitude?components.map(v=>v/magnitude):null,angle=rLength&&forceLength?Math.acos(Math.max(-1,Math.min(1,dot(r,force)/(rLength*forceLength))))*180/Math.PI:null;
+  const arm=forceLength?magnitude/forceLength:null,forceUnit=forceLength?force.map(v=>v/forceLength):null,foot=forceUnit?point.map((v,i)=>v-dot(r,forceUnit)*forceUnit[i]):null;
+  return {r,components,magnitude,rLength,forceLength,direction,angle,arm,foot,forceUnit};
+ }
+ const api={parse,evaluate,markup,esc,resultant,directedForce,dot,projection,cross,moment};if(typeof module!=='undefined')module.exports=api;else root.StudyMath=api;
 })(typeof window!=='undefined'?window:globalThis);
