@@ -126,3 +126,6 @@ for(const [i,f] of D.problems.find(p=>p.id==='position').steps[0].fields.entries
 const sigStep=D.problems.find(p=>p.id==='resultants-triangle').steps[0];assert.ok(D.correct(sigStep,{0:'217.9'},4));assert.ok(!D.correct(sigStep,{0:'217.9'},6));
 b=browser();b.context.GuidedRoadmap.open('resultants');assert.ok(b.node('roadmap').innerHTML.includes('value="10" selected'));
 console.log('Per-problem significant figures persist independently and across restarts; coordinates stay compact and selected rounded answers are accepted.');
+
+for(const problem of D.problems.filter(p=>/\bP\s*=/.test(p.prompt))){b.context.GuidedRoadmap.open(problem.group);b.context.GuidedRoadmap.selectProblem(problem.id);const svg=b.node('roadmapDiagram-'+problem.id).innerHTML;assert.ok(svg.includes('data-point="P"'),problem.id);assert.ok(svg.includes('class="point-label"'),problem.id);}
+console.log('All roadmap prompts specifying P render a distinct named application-point marker.');

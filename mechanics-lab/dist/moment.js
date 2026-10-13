@@ -35,7 +35,7 @@
   const m=M.moment(state.O,state.P,state.F),length=Math.max(m.rLength,1),origin=[0,0,0],P=m.r,H=m.foot?m.foot.map((v,i)=>v-state.O[i]):null;
   $('momentProblem').innerHTML=`A force <strong>F = ${E.tuple(state.F)} N</strong> acts at <strong>P = ${E.tuple(state.P)} m</strong>. Find its moment about <strong>O = ${E.tuple(state.O)} m</strong>.`;$('momentSteps').innerHTML=steps(state);$('momentError').textContent='';$('momentSummary').innerHTML=`<div><small>MOMENT MAGNITUDE</small>${E.round(m.magnitude)} N·m</div><div><small>PERPENDICULAR ARM</small>${m.arm===null?'Undefined':E.round(m.arm)+' m'}</div>`;
   $('momentRotation').textContent=m.magnitude<1e-10?'Zero moment: the force is zero or its line of action passes through O.':m.components[0]===0&&m.components[1]===0?`Mz = ${E.round(m.components[2])} N·m: ${m.components[2]>0?'counterclockwise (+z)':'clockwise (−z)'} when viewed from +z toward the xy plane.`:'The 3D moment direction follows the right-hand rule; inspect its signed Cartesian components.';
-  const items=[{start:origin,end:P,color:'#8cbcff',label:'P / rOP',arrow:true}];
+  const items=[{start:origin,end:P,color:'#8cbcff',label:'rOP',pointEnd:'P',arrow:true}];
   if(m.forceUnit){items.push({start:P.map((v,i)=>v-m.forceUnit[i]*length),end:P.map((v,i)=>v+m.forceUnit[i]*length),color:'#617384',label:'force line',dashed:true},{start:origin,end:H,color:'#efbd77',label:'d / foot H',dashed:true},{start:P,end:P.map((v,i)=>v+m.forceUnit[i]*length*.6),color:'#b4f178',label:'F (direction)',arrow:true});}
   if(m.direction)items.push({start:origin,end:m.direction.map(v=>v*length*.6),color:'#d3a0ee',label:'MO (direction)',arrow:true});E.diagram('momentDiagram',state.view,items,[{origin:[0,0,0],first:m.r,second:state.F,label:'θ: r to F'}]);
  }

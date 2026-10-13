@@ -8,7 +8,7 @@
  const arrow=(start,end,label,color='#b4f178',dashed=false)=>({start,end,label,color,arrow:true,dashed});
  const geometry=(A,B,F)=>({unit:'m',view:A[2]||B[2]?'iso':'xy',items:[arrow(zero,A,'A (m)','#8cbcff',true),arrow(zero,B,'B (m)','#efbd77',true),arrow(A,B,'rAB / cable direction')],note:F?'Coordinates and displacement use metres. The cable force acts along A→B.':'Coordinates and displacement use metres.'});
  const forces=(...items)=>({unit:'N',view:items.some(i=>i.end[2])?'iso':'xy',items,note:'Force arrows share the newton scale; axis labels give the scale.'});
- const momentGraph=(P,F,axis)=>({unit:'m',view:P[2]||F[2]||axis?.[2]?'iso':'xy',items:[arrow(zero,P,'r / P (m)','#8cbcff'),arrow(P,add(P,scale(unit(F),2)),'F (direction only)','#b4f178'),...(axis?[arrow(zero,axis,'positive axis','#efbd77',true)]:[])],note:'Positions use metres. Force arrow length is illustrative; its direction is exact. 3D screen lengths and angles are projected.'});
+ const momentGraph=(P,F,axis)=>({unit:'m',view:P[2]||F[2]||axis?.[2]?'iso':'xy',items:[{...arrow(zero,P,'r (m)','#8cbcff'),pointEnd:'P'},arrow(P,add(P,scale(unit(F),2)),'F (direction only)','#b4f178'),...(axis?[arrow(zero,axis,'positive axis','#efbd77',true)]:[])],note:'Positions use metres. Force arrow length is illustrative; its direction is exact. 3D screen lengths and angles are projected.'});
  for(const p of D.problems){p.group=p.id;p.typeName={resultants:'Resultant of two planar forces',position:'Planar cable force from endpoints',projection:'Scalar and parallel projection from endpoints',moments:'Point moment and perpendicular arm',axis:'Signed axis moment from endpoints',couples:'Couple vector and line spacing'}[p.id];}
  const base=Object.fromEntries(D.problems.map(p=>[p.id,p]));
  base.resultants.graph={...forces(arrow(zero,[120*Math.cos(Math.PI/6),60,0],'A','#8cbcff'),arrow(zero,[-45,90*Math.sin(2*Math.PI/3),0],'B','#efbd77')),angles:[{origin:zero,first:[1,0,0],second:[Math.cos(Math.PI/6),.5,0],label:'α'},{origin:zero,first:[1,0,0],second:[-.5,Math.sin(2*Math.PI/3),0],label:'β'}]};
@@ -90,7 +90,7 @@
  }
  for(const p of D.problems){
   const firstNumeric=Math.max(0,p.steps.findIndex(s=>s.fields)),gates={resultants:[1,1],position:[0,0,1],projection:[0,0,1,3],moments:[1,3],axis:[2,3,1],couples:[1,2,2]}[p.id];
-  p.graph.items.forEach((item,i)=>item.measurementStep=gates?.[i]??firstNumeric);
+  p.graph.items.forEach((item,i)=>{item.measurementStep=gates?.[i]??firstNumeric;if(/^rQP/.test(item.label)){item.pointStart='Q';item.pointEnd='P';}if(p.group==='couples'&&/^\+F/.test(item.label))item.pointStart='P';if(p.group==='couples'&&/^[\u2212-]F/.test(item.label))item.pointStart='Q';});
   p.steps.forEach((step,i)=>(step.reveals||[]).forEach(item=>item.measurementStep=i));
  }
  if(typeof module!=='undefined')module.exports=D;

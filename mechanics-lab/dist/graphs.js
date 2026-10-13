@@ -19,7 +19,7 @@
   return out+`<text class="axis-caption" x="12" y="23" fill="#cfdae8" font-size="14">Axis coordinates (${unit}) · tick steps ${steps.join(' / ')} ${unit}</text>`;
  }
  // Place labels in SVG coordinates so enlargement preserves the same spacing.
- function layout(svg){if(!svg?.querySelectorAll||!svg.viewBox?.baseVal)return;const height=svg.viewBox.baseVal.height,boxes=[],texts=[...svg.querySelectorAll('text')].sort((a,b)=>Number(a.classList.contains('axis-tick'))-Number(b.classList.contains('axis-tick')));
+ function layout(svg){if(!svg?.querySelectorAll||!svg.viewBox?.baseVal)return;const height=svg.viewBox.baseVal.height,boxes=[],texts=[...svg.querySelectorAll('text')].sort((a,b)=>(a.classList.contains('point-label')?-1:Number(a.classList.contains('axis-tick')))-(b.classList.contains('point-label')?-1:Number(b.classList.contains('axis-tick'))));
   for(const text of texts){if(!text.getBBox)continue;const original=text.getBBox();if(!original.width)continue;let placed=false;for(const [dx,dy] of [[0,0],[0,-22],[0,22],[25,0],[-45,0],[25,-22],[-45,22],[0,-44],[0,44]]){const x=Math.max(8,Math.min(592-original.width,original.x+dx)),y=Math.max(5,Math.min(height-8-original.height,original.y+dy)),box={x,y,width:original.width,height:original.height};if(boxes.some(b=>box.x<b.x+b.width+5&&box.x+box.width+5>b.x&&box.y<b.y+b.height+4&&box.y+box.height+4>b.y))continue;text.setAttribute('transform',`translate(${x-original.x} ${y-original.y})`);boxes.push(box);placed=true;break;}if(!placed){text.setAttribute('visibility','hidden');}}
  }
  const animations=new WeakMap();
