@@ -62,3 +62,10 @@ assert.equal(D.problems.find(p=>p.id==='axis-3d').steps.at(-1).fields[0].value,-
 assert.ok(Math.abs(D.problems.find(p=>p.id==='projection-negative-3d').steps.at(-1).fields[0].value+1550/13)<1e-10);
 assert.equal(D.problems.find(p=>p.id==='couples-force').steps[0].fields[0].value,300);
 console.log('All 33 types solve, save independently, retain completion checks, resume selection, archive retries, and render labelled vector arrows.');
+
+b.context.GuidedRoadmap.open('position');b.context.GuidedRoadmap.selectProblem('position-distance');
+const fitted=b.node('roadmapDiagram-position-distance').innerHTML;
+assert.ok(!fitted.includes('x=40'));assert.ok(!fitted.includes('y=40'));assert.ok(fitted.includes('z=5'));
+const cableLine=[...fitted.matchAll(/<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"[^>]*marker-end/g)].at(-1);
+assert.ok(Math.hypot(Number(cableLine[3])-Number(cableLine[1]),Number(cableLine[4])-Number(cableLine[2]))>130,'3D displacement should occupy a readable fraction of the viewport');
+console.log('Roadmap fit uses projected geometry, keeps the 3D vector visible, and omits irrelevant 40 m ticks.');
