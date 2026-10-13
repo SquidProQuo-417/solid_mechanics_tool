@@ -8,3 +8,19 @@ b.context.examInProgress=true;b.context.GuidedRoadmap.open('couples');assert.ok(
 console.log('Six scaffolded problem types, coordinate-first projections, numeric/choice checking, gated steps, saved resume, assisted progress, restart and exam lock passed.');
 assert.ok(!b.node('roadmap').innerHTML.includes('Choose a problem type'));b.context.GuidedRoadmap.open('couples');assert.equal(b.node('pageTitle').textContent,'Couple moments walkthrough');b.node('roadmapExplore').onclick();assert.equal(b.context.view,'coupleWorkspace');b.context.GuidedRoadmap.open('axis');b.node('roadmapExplore').onclick();assert.equal(b.context.view,'axisWorkspace');
 b.context.GuidedRoadmap.open('resultants');assert.ok(b.node('roadmapDiagram').innerHTML.includes('α = 30°'));assert.ok(b.node('roadmapDiagram').innerHTML.includes('β = 120°'));b.query('input[name="roadmapChoice"]')[0].onchange();b.node('roadmapCheck').onclick();b.node('roadmapNext').onclick();const componentStep=D.problems[0].steps[1];for(const [i,f] of componentStep.fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=Number(f.value).toFixed(3);input.oninput();}b.node('roadmapCheck').onclick();b.node('roadmapNext').onclick();const history=b.node('roadmap').innerHTML;assert.ok(history.includes('Your checked steps'));for(const field of componentStep.fields){assert.ok(history.includes(field.label));assert.ok(history.includes(Number(field.value).toFixed(3)));}assert.ok(history.includes('<details class="history-step">'));assert.ok(history.includes('Return to step 2'));
+
+for(const p of D.problems)for(const step of p.steps){assert.ok(step.hint.reminder.trim());assert.ok(step.hint.inputs.trim());}
+assert.ok(b.node('roadmap').innerHTML.includes('aria-controls="roadmapHint"'));
+assert.ok(b.node('roadmap').innerHTML.includes('Use all four signed components'));
+const beforeHint=storage.get('statics-roadmap-v1'),beforeSolution=b.node('roadmapSolution').textContent;
+b.node('roadmapHint').hidden=true; // Mirror native hidden markup in the simulated DOM.
+b.node('roadmapHintToggle').onclick();
+assert.equal(b.node('roadmapHint').hidden,false);
+assert.equal(b.node('roadmapHintToggle').textContent,'Hide hint');
+assert.equal(b.node('roadmapHintToggle').attrs['aria-expanded'],'true');
+assert.equal(b.node('roadmapNext').disabled,true);
+assert.equal(storage.get('statics-roadmap-v1'),beforeHint);
+assert.equal(b.node('roadmapSolution').textContent,beforeSolution);
+b.node('roadmapHintToggle').onclick();assert.equal(b.node('roadmapHint').hidden,true);
+assert.equal(b.node('roadmapHintToggle').attrs['aria-expanded'],'false');
+console.log('All steps have formula/input hints; toggling preserves answers, progress and explanation separation.');
