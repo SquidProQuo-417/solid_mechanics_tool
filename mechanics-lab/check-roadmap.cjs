@@ -92,7 +92,7 @@ assert.ok(b.node('roadmap').innerHTML.includes('>1.34</span>'));
 assert.ok(!b.node('roadmap').innerHTML.includes('Your answers are within tolerance'));
 b.query('[data-roadmap-field]')[0].oninput();assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
 b.context.GuidedRoadmap.open('resultants');b.context.GuidedRoadmap.selectProblem('resultants');b.node('roadmapRestart').onclick();b.query('input[name="roadmapChoice"]')[0].onchange();b.node('roadmapCheck').onclick();b.node('roadmapNext').onclick();
-for(const [i,f] of D.problems[0].steps[1].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('>103.9230485</span>'));
+for(const [i,f] of D.problems[0].steps[1].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('>104</span>'));
 const finalStep=D.problems.find(p=>p.id==='resultants-triangle').steps[0];assert.ok(D.correct(finalStep,{0:'218'}));assert.ok(!D.correct(finalStep,{0:'219'}));
 console.log('Derived arms appear only after valid checks and disappear on edits; numerical feedback uses 10/3 significant figures and accepts rounded final results.');
 
@@ -110,3 +110,19 @@ b.query('[data-roadmap-field]')[0].value='99';b.query('[data-roadmap-field]')[0]
 assert.equal(b.node('roadmapMeasurements').hidden,true);assert.equal(b.node('roadmapEarnedControls').hidden,true);
 assert.ok(!b.node('roadmapDiagram-moments-scalar').innerHTML.includes('plane-measurement'));
 console.log('Measurements unlock and show after checked steps, relock on edits, and use matching purple projection arrowheads.');
+
+b.context.GuidedRoadmap.open('resultants');b.context.GuidedRoadmap.selectProblem('resultants');
+b.node('roadmapSigFigs').value='6';b.node('roadmapSigFigs').onchange();
+assert.equal(JSON.parse(storage.get('statics-roadmap-v1')).resultants.sigFigs,6);
+assert.ok(b.node('roadmap').innerHTML.includes('>103.923</span>'));
+const beforePrecision=JSON.parse(storage.get('statics-roadmap-v1')).resultants.answers;
+b.node('roadmapSigFigs').value='10';b.node('roadmapSigFigs').onchange();assert.ok(b.node('roadmap').innerHTML.includes('>103.9230485</span>'));
+assert.deepEqual(JSON.parse(storage.get('statics-roadmap-v1')).resultants.answers,beforePrecision);
+b.context.GuidedRoadmap.selectProblem('resultants-component');assert.ok(b.node('roadmap').innerHTML.includes('value="3" selected'));
+b.context.GuidedRoadmap.selectProblem('resultants');assert.ok(b.node('roadmap').innerHTML.includes('value="10" selected'));
+b.node('roadmapRestart').onclick();assert.equal(JSON.parse(storage.get('statics-roadmap-v1')).resultants.sigFigs,10);
+b.context.GuidedRoadmap.open('position');b.context.GuidedRoadmap.selectProblem('position');b.node('roadmapRestart').onclick();b.node('roadmapSigFigs').value='10';b.node('roadmapSigFigs').onchange();
+for(const [i,f] of D.problems.find(p=>p.id==='position').steps[0].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('>1</span>'));assert.ok(!b.node('roadmap').innerHTML.includes('>1.000000000</span>'));
+const sigStep=D.problems.find(p=>p.id==='resultants-triangle').steps[0];assert.ok(D.correct(sigStep,{0:'217.9'},4));assert.ok(!D.correct(sigStep,{0:'217.9'},6));
+b=browser();b.context.GuidedRoadmap.open('resultants');assert.ok(b.node('roadmap').innerHTML.includes('value="10" selected'));
+console.log('Per-problem significant figures persist independently and across restarts; coordinates stay compact and selected rounded answers are accepted.');
