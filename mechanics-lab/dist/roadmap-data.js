@@ -89,6 +89,6 @@
  };
  for(const p of problems)for(const s of p.steps)s.worked=worked[s.title];
 
- function correct(step,answers){if(step.options)return answers.choice!==undefined&&Number(answers.choice)===step.answer;return step.fields.every((f,i)=>answers[i]!==undefined&&String(answers[i]).trim()!==''&&Number.isFinite(Number(answers[i]))&&Math.abs(Number(answers[i])-f.value)<=f.tolerance);}
+ function correct(step,answers){if(step.options)return answers.choice!==undefined&&Number(answers.choice)===step.answer;return step.fields.every((f,i)=>answers[i]!==undefined&&String(answers[i]).trim()!==''&&Number.isFinite(Number(answers[i]))&&(Math.abs(Number(answers[i])-f.value)<=f.tolerance+1e-12||step.precision===3&&Number(answers[i])===Number(f.value.toPrecision(3))));}
  const api={problems,correct};if(typeof module!=='undefined')module.exports=api;else root.RoadmapData=api;
 })(typeof window!=='undefined'?window:globalThis);

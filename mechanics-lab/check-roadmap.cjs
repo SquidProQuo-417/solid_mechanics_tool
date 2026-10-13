@@ -66,7 +66,7 @@ console.log('All 33 types solve, save independently, retain completion checks, r
 b.context.GuidedRoadmap.open('position');b.context.GuidedRoadmap.selectProblem('position-distance');
 const fitted=b.node('roadmapDiagram-position-distance').innerHTML;
 assert.ok(!fitted.includes('x=40'));assert.ok(!fitted.includes('y=40'));assert.ok(fitted.includes('z=5'));
-const cableLine=[...fitted.matchAll(/<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"[^>]*marker-end/g)].at(-1);
+const cableLine=[...fitted.matchAll(/<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"[^>]*marker-end/g)][2];
 assert.ok(Math.hypot(Number(cableLine[3])-Number(cableLine[1]),Number(cableLine[4])-Number(cableLine[2]))>130,'3D displacement should occupy a readable fraction of the viewport');
 console.log('Roadmap fit uses projected geometry, keeps the 3D vector visible, and omits irrelevant 40 m ticks.');
 
@@ -81,3 +81,17 @@ b.node('roadmapMeasurementToggle').onclick();assert.equal(b.node('roadmapMeasure
 assert.deepEqual(JSON.parse(storage.get('statics-roadmap-v1'))['position-distance'].answers,answerBeforeLayer);
 for(const p of D.problems){b.context.GuidedRoadmap.open(p.group);b.context.GuidedRoadmap.selectProblem(p.id);const html=b.node('roadmapDiagram-'+p.id).innerHTML;const arrowLines=[...html.matchAll(/<line x1="([^"]+)" y1="([^"]+)" x2="([^"]+)" y2="([^"]+)"[^>]*marker-end/g)];assert.ok(arrowLines.length,p.id);let maxLength=0;for(const line of arrowLines){const values=line.slice(1).map(Number);assert.ok(values[0]>=50&&values[0]<=550&&values[2]>=50&&values[2]<=550,p.id);assert.ok(values[1]>=75&&values[1]<=345&&values[3]>=75&&values[3]<=345,p.id);maxLength=Math.max(maxLength,Math.hypot(values[2]-values[0],values[3]-values[1]));}assert.ok(maxLength>90,p.id);}
 console.log('Every roadmap graph keeps arrow endpoints inside padded bounds; plane layer toggles, coordinate readouts and answer preservation passed.');
+
+b.context.GuidedRoadmap.open('moments');b.context.GuidedRoadmap.selectProblem('moments');b.node('roadmapRestart').onclick();
+assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+const momentProblem=D.problems.find(p=>p.id==='moments');
+for(let i=0;i<=4;i++){const step=momentProblem.steps[i];if(step.options)b.query('input[name="roadmapChoice"]')[step.answer].onchange();else for(const [j,f] of step.fields.entries()){const input=b.query('[data-roadmap-field]')[j];input.value=String(f.value);input.oninput();}assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));b.node('roadmapCheck').onclick();if(i<4)b.node('roadmapNext').onclick();}
+assert.ok(b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+assert.ok(b.node('roadmapDiagram-moments').innerHTML.includes('d = 1.34 m'));
+assert.ok(b.node('roadmap').innerHTML.includes('>1.34</span>'));
+assert.ok(!b.node('roadmap').innerHTML.includes('Your answers are within tolerance'));
+b.query('[data-roadmap-field]')[0].oninput();assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+b.context.GuidedRoadmap.open('resultants');b.context.GuidedRoadmap.selectProblem('resultants');b.node('roadmapRestart').onclick();b.query('input[name="roadmapChoice"]')[0].onchange();b.node('roadmapCheck').onclick();b.node('roadmapNext').onclick();
+for(const [i,f] of D.problems[0].steps[1].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('>103.9230485</span>'));
+const finalStep=D.problems.find(p=>p.id==='resultants-triangle').steps[0];assert.ok(D.correct(finalStep,{0:'218'}));assert.ok(!D.correct(finalStep,{0:'219'}));
+console.log('Derived arms appear only after valid checks and disappear on edits; numerical feedback uses 10/3 significant figures and accepts rounded final results.');

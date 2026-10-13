@@ -62,5 +62,31 @@
  const angleProblem=D.problems.find(p=>p.id==='resultants-component');angleProblem.graph.angles=[{origin:zero,first:[1,0,0],second:angleProblem.graph.items[0].end,label:'θ'}];
  const projectionAngle=D.problems.find(p=>p.id==='projection-angle');projectionAngle.graph.angles=[{origin:zero,first:[1,0,0],second:projectionAngle.graph.items[0].end,label:'θ'}];
  const oblique=D.problems.find(p=>p.id==='resultants-oblique');oblique.graph.angles=[{origin:zero,first:[1,0,0],second:oblique.graph.items[0].end,label:'force angle'},{origin:zero,first:[1,0,0],second:oblique.graph.items[1].end,label:'axis angle'}];
+ // End results are identified by the requested quantity, not merely by step order.
+ const finalTitles={resultants:['Recover the magnitude','Find and check the direction'],position:['Construct the cable force','Check the result'],projection:['Take the scalar projection','Recover the parallel vector'],moments:['Calculate the moment vector','Find the perpendicular arm'],axis:['Project the moment','Separate sign from magnitude'],couples:['Compute the couple vector','Find the perpendicular spacing']};
+ for(const p of D.problems){
+  for(let i=0;i<p.steps.length;i++){const s=p.steps[i];s.precision=p.id===p.group?(finalTitles[p.group].includes(s.title)?3:10):(i===p.steps.length-1||(['resultants-component','resultants-cartesian','resultants-triangle'].includes(p.id)&&i===0)?3:10);s.reveals=[];}
+  const attach=(index,items)=>{if(index>=0)p.steps[index].reveals.push(...items);};
+  const displayVector=(start,v,label,units)=>{const same=p.graph.unit===units,end=add(start,same?v:length(v)?scale(unit(v),2):zero);return {...arrow(start,end,label+' = '+tuple(v)+' '+units+(same?'':' (direction only)'),'#d6b6ff'),derived:true};};
+  const index=title=>p.steps.findIndex(s=>s.title===title);
+  if(p.id==='resultants')attach(index('Add matching components'),[displayVector(zero,[58.9230484541,137.9422863406,0],'R','N')]);
+  if(p.id==='position')attach(index('Construct the cable force'),[displayVector([1,1,0],[60,80,0],'F','N')]);
+  if(p.id==='projection')attach(index('Recover the parallel vector'),[displayVector(zero,[60,80,0],'Fparallel','N')]);
+  if(p.id==='moments'){
+   const result=M.moment(zero,[2,1,0],[50,100,0]),H=result.foot,back=unit(scale(H,-1));
+   attach(index('Find the perpendicular arm'),[{...arrow(zero,H,'d = '+result.arm.toPrecision(3)+' m','#d6b6ff'),derived:true,rightAngle:{origin:H,first:back,second:result.forceUnit}}, {...arrow(H,[2,1,0],'force line','#94a3b8',true),arrow:false,derived:true}]);
+  }
+  if(p.id==='couples')attach(index('Find the perpendicular spacing'),[{...arrow(zero,[2,0,0],'d = 2.00 m','#d6b6ff'),derived:true,rightAngle:{origin:[2,0,0],first:[-1,0,0],second:[0,1,0]}},{...arrow([2,0,0],[2,3,0],'positive force line','#94a3b8',true),arrow:false,derived:true}]);
+  if(p.id==='projection-perpendicular'){
+   attach(index('Build the parallel vector'),[displayVector(zero,parallel,'Fparallel','N')]);
+   attach(index('Subtract the perpendicular remainder'),[displayVector(parallel,perp,'Fperp','N')]);
+  }
+  for(const s of p.steps){
+   if(p.id!==p.group&&s.fields?.length===3&&/Add three|unknown force|Build the force vector|Resolve a force|Apply coordinate|Calculate M/.test(s.title)){const value=s.fields.map(f=>f.value),isMoment=/Calculate M/.test(s.title);attach(p.steps.indexOf(s),[displayVector(zero,value,s.fields[0].label.replace(/x.*$/,''),isMoment?'N·m':'N')]);}
+   if(s.title==='Find distance and unit direction'||s.title==='Normalize the direction'||s.title==='Normalize the axis'){const value=s.fields.slice(-3).map(f=>f.value);attach(p.steps.indexOf(s),[{...arrow(zero,value,'u = '+tuple(value)+' (dimensionless)','#d6b6ff'),derived:true}]);}
+   if(s.title==='Project the moment'||(p.group==='axis'&&s.title==='Project onto the positive axis')){const value=s.fields[0].value,axisItem=p.graph.items.find(item=>/axis/.test(item.label)),direction=axisItem?unit(sub(axisItem.end,axisItem.start)):[0,0,1];attach(p.steps.indexOf(s),[displayVector(zero,scale(direction,value),'Maxis','N·m')]);}
+  }
+  if(p.id==='couples-spacing')attach(0,[{...arrow(zero,[.6,0,0],'d = 0.600 m','#d6b6ff'),derived:true,rightAngle:{origin:[.6,0,0],first:[-1,0,0],second:[0,1,0]}}]);
+ }
  if(typeof module!=='undefined')module.exports=D;
 })(typeof window!=='undefined'?window:globalThis);
