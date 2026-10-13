@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),G=require('./dist/graphs.js');
+const nodes=new Map();function element(){return {children:[],appendChild(n){this.children.push(n);},set innerHTML(v){this.children=[];}};}const svg={parentElement:{},insertAdjacentElement(_,bar){nodes.set(bar.id,bar);}};nodes.set('test',svg);global.document={getElementById:id=>nodes.get(id),createElement:element};
+let fit={scale:10,offsetX:300,offsetY:200,extent:10},current;const redraw=()=>current=G.frame('test','iso',fit,redraw,'N');redraw();assert.equal(current.scale,10);
+fit={...fit,scale:20,extent:5};redraw();assert.equal(current.scale,10,'halving input values must not rescale the graph');
+let bar=nodes.get('testScaleControls');bar.children[0].onclick();assert.equal(current.scale,15);bar=nodes.get('testScaleControls');bar.children[1].onclick();assert.equal(current.scale,10);
+bar=nodes.get('testScaleControls');bar.children[2].onclick();assert.equal(current.scale,20);assert.equal(current.extent,5);
+bar=nodes.get('testScaleControls');bar.children[3].onclick();fit={...fit,scale:4,extent:25};redraw();assert.equal(current.scale,4);assert.ok(nodes.get('testScaleControls').children[4].textContent.includes('Auto-fit'));
+assert.equal(G.frame('test','xy',{scale:30,extent:3},redraw,'N').scale,30,'views retain independent scales');
+const output=G.axesSVG('iso',p=>[300+(p[0]-p[1])*10,200-p[2]*10],10,'N');assert.ok(output.includes('Axis coordinates (N)'));for(const axis of ['x','y','z'])assert.ok(output.includes(axis+'='));assert.ok(!output.includes('NaN'));delete global.document;
+console.log('Locked scale, proportional arrow changes, zoom, fit, auto-fit, per-view scales and labelled 3D ticks passed.');

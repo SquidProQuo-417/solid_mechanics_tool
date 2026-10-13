@@ -1,5 +1,7 @@
 # Statics Study Lab
 
+Live labs use locked coordinate scales by default, with numbered axis ticks, units, zoom and Fit to data controls. Auto-fit is optional and explicitly labelled. Each view retains its scale separately. Position plots measure geometry in metres; force-projection plots measure newtons. Moment/couple geometry uses metres while their force and moment arrows show direction only. Projected 3D screen lengths and angles are not physical measurements. Verify scale controls with `node check-graphs.cjs`.
+
 Buildless, responsive Exam 1 prototype. Open `dist/index.html` in a modern browser, or serve `dist` with any static HTTP server. Native MathML renders fractions and other mathematics without a runtime dependency. Google Fonts are optional; system fonts are the fallback.
 
 Includes a 2D force playground, component solutions, original guided practice, an equation reference with context-specific clickable symbols, and a TI-84-style scientific calculator. The position/unit-vector lesson accepts 3D points, shows axis projections and a 3D projection, allows point dragging in axis views, and walks through displacement, distance, unit direction, force components, and coordinate direction angles. Practice progresses through three calculation stages. Coincident points explicitly have no unit direction. Projected screen angles and lengths are not physical measurements.

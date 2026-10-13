@@ -9,7 +9,7 @@ r=M.directedForce([0,0,0],[0,0,-1],0);assert.deepEqual(r.force,[0,0,-0]);near(r.
 // Simulated DOM exercises initialization and actual control/answer handlers.
 const elements=new Map(),listeners={};function element(id){if(!elements.has(id))elements.set(id,{id,value:'',dataset:{},checked:true,hidden:false,innerHTML:'',textContent:'',handlers:{},addEventListener(key,fn){this.handlers[key]=fn;},showModal(){this.open=true;},close(){this.open=false;}});return elements.get(id);}
 const context=vm.createContext({StudyMath:M,document:{getElementById:element,querySelectorAll:()=>[],addEventListener:(key,fn)=>listeners[key]=fn},localStorage:{getItem:()=>null},window:{print(){}},console});
-for(const file of ['learning.js','app.js','position.js'])vm.runInContext(fs.readFileSync('dist/'+file,'utf8'),context);
+for(const file of ['graphs.js','learning.js','app.js','position.js'])vm.runInContext(fs.readFileSync('dist/'+file,'utf8'),context);
 assert.ok(element('position').innerHTML.includes('Point & cable lab'));assert.ok(element('positionSteps').innerHTML.includes('<mfrac>'));assert.ok(element('positionSteps').innerHTML.includes('data-symbol="unitAB"'));assert.ok(element('positionSummary').innerHTML.includes('5 m'));
 element('reverseDirection').onclick();assert.ok(element('positionSteps').innerHTML.includes('data-symbol="displacementBA"'));assert.ok(element('geometryProblem').innerHTML.includes('toward A'));
 element('example3D').onclick();assert.ok(element('positionSteps').innerHTML.includes('data-symbol="alpha3D"'));assert.ok(element('positionSummary').innerHTML.includes('7 m'));assert.ok(element('projectionHelp').textContent.includes('not physical measurements'));

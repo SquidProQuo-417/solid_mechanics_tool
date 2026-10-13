@@ -3,7 +3,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const elements=new Map(),listeners={};function element(id){if(!elements.has(id))elements.set(id,{id,value:'',dataset:{},checked:true,hidden:false,innerHTML:'',textContent:'',addEventListener(){},showModal(){this.open=true;},close(){this.open=false;}});return elements.get(id);}
 const roadmap=['lesson','position','projection','moment','axisCouple','assessment'].map(view=>({dataset:{view},attrs:{},classList:{toggle(){}},setAttribute(k,v){this.attrs[k]=v;}}));
 const context=vm.createContext({StudyMath:require('./dist/math.js'),document:{getElementById:element,querySelectorAll:()=>[],addEventListener:(key,fn)=>listeners[key]=fn},localStorage:{getItem:()=>null},window:{print(){}},console});
-vm.runInContext(fs.readFileSync('dist/learning.js','utf8'),context);vm.runInContext(fs.readFileSync('dist/app.js','utf8'),context);
+vm.runInContext(fs.readFileSync('dist/graphs.js','utf8'),context);vm.runInContext(fs.readFileSync('dist/learning.js','utf8'),context);vm.runInContext(fs.readFileSync('dist/app.js','utf8'),context);
 assert.ok(!element('steps').innerHTML.includes('<mo>°)</mo>'));assert.ok(element('steps').innerHTML.includes('<mo stretchy="false">(</mo>'));assert.ok(element('steps').innerHTML.includes('<mo stretchy="false">)</mo>'));assert.ok(element('steps').innerHTML.includes('<mo>−</mo><mn>45</mn>'));
 const html=fs.readFileSync('dist/index.html','utf8');assert.equal((html.match(/class="roadmap-link/g)||[]).length,6);
 context.document.querySelectorAll=selector=>selector==='.course button[data-view]'?roadmap:selector==='.view'?roadmap.map(b=>element(b.dataset.view)):[];
