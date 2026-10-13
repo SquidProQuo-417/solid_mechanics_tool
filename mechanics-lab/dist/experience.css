@@ -14,3 +14,5 @@ fieldset .coordinate-row>label,fieldset .coordinate-row>label+label{margin-top:0
 .nav-folder:has(button.active)>summary{color:var(--green)}
 
 .roadmap-history{margin-top:20px}.roadmap-history h2{font-size:18px}.history-step{padding:14px 0;border-top:1px solid var(--line)}.history-step summary{cursor:pointer;line-height:1.9;color:var(--green)}.history-step summary span{display:block;color:var(--text);font-size:13px;overflow-wrap:anywhere}.history-step p{font-size:13px;line-height:1.8;color:var(--muted)}.angle-label{paint-order:stroke;stroke:#141b24;stroke-width:3px;stroke-linejoin:round}
+
+.roadmap-worked{padding-left:1.6rem}.roadmap-worked li{padding:0 0 1rem .4rem}.roadmap-worked li+li{border-top:1px solid var(--line);padding-top:1rem}.roadmap-worked li::marker{color:var(--green);font-weight:700}.worked-equation{overflow-x:auto;padding:.3rem 0;font-size:1.05rem}

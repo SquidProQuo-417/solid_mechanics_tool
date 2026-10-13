@@ -24,3 +24,26 @@ assert.equal(b.node('roadmapSolution').textContent,beforeSolution);
 b.node('roadmapHintToggle').onclick();assert.equal(b.node('roadmapHint').hidden,true);
 assert.equal(b.node('roadmapHintToggle').attrs['aria-expanded'],'false');
 console.log('All steps have formula/input hints; toggling preserves answers, progress and explanation separation.');
+
+for(const p of D.problems)for(const step of p.steps){assert.ok(step.worked.length>=2);for(const row of step.worked){assert.ok(row.text.trim());assert.ok(Array.isArray(row.equations));}}
+b.context.GuidedRoadmap.open('position');b.node('roadmapSolution').hidden=true;
+b.node('roadmapExplain').onclick();assert.ok(b.node('roadmapSolution').innerHTML.includes('Measure each point'));
+assert.equal(b.node('roadmapExplain').attrs['aria-expanded'],'true');
+b.node('roadmapExplain').onclick();assert.equal(b.node('roadmapSolution').hidden,true);
+const normalize=D.problems.find(p=>p.id==='position').steps[2];
+assert.ok(normalize.worked.some(row=>row.equations.includes('ux = 3/5 = 0.6')));
+assert.ok(normalize.worked.some(row=>row.equations.includes('uy = 4/5 = 0.8')));
+assert.ok(normalize.worked.some(row=>row.equations.includes('uz = 0/5 = 0')));
+console.log('Every roadmap step has narrated derivations; explanation toggle and unit-component calculations passed.');
+
+const position=D.problems.find(p=>p.id==='position');
+for(let index=0;index<2;index++){for(const [i,f] of position.steps[index].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();b.node('roadmapNext').onclick();}
+b.node('roadmapSolution').hidden=true;b.node('roadmapExplain').onclick();
+const derivation=b.node('roadmapSolution').innerHTML;
+assert.ok(derivation.includes('<ol class="roadmap-worked">'));
+assert.ok(derivation.includes('<mfrac>'));assert.ok(derivation.includes('ux = '));
+assert.ok(derivation.includes('uy = '));assert.ok(derivation.includes('uz = '));
+assert.ok(derivation.includes('Metres cancel'));
+for(const [i,f] of normalize.fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}
+b.node('roadmapCheck').onclick();assert.ok(!b.node('roadmapFeedback').innerHTML.includes(normalize.solution));
+for(const p of D.problems)for(const step of p.steps)for(const row of step.worked)for(const eq of row.equations)assert.ok(!eq.includes('?'),eq);
