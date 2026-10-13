@@ -1,5 +1,7 @@
 # Statics Study Lab
 
+The start page separates discovery in Workspace, six guided problem walkthroughs in the Midterm Roadmap, and exam preparation. Roadmap steps check coordinates, setup choices, vectors and numerical results before advancing; explanations viewed are marked, and progress saves per browser. Workspace panels and individual equation steps can be minimized and restored, with browser-local preferences. Topic headings follow the selected page. Graph geometry interpolates over 220 ms and respects reduced-motion settings. Coordinate rows override stacked-label spacing so x/y/z fields align. Verify the new flows with `node check-roadmap.cjs` and `node check-experience.cjs`, alongside the existing checks.
+
 Live labs use locked coordinate scales by default, with numbered axis ticks, units, zoom and Fit to data controls. Auto-fit is optional and explicitly labelled. Each view retains its scale separately. Position plots measure geometry in metres; force-projection plots measure newtons. Moment/couple geometry uses metres while their force and moment arrows show direction only. Projected 3D screen lengths and angles are not physical measurements. Verify scale controls with `node check-graphs.cjs`.
 
 Buildless, responsive Exam 1 prototype. Open `dist/index.html` in a modern browser, or serve `dist` with any static HTTP server. Native MathML renders fractions and other mathematics without a runtime dependency. Google Fonts are optional; system fonts are the fallback.
