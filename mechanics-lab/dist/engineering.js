@@ -1,6 +1,6 @@
 /* Shared display helpers for force projections and moments. */
 const Engineering=(()=>{
- const axes=['x','y','z'],round=n=>Math.abs(n)<.0000005?'0':Number(n.toFixed(4)).toString(),num=n=>'<mn>'+round(n)+'</mn>',text=s=>'<mtext>'+M.esc(s)+'</mtext>',tuple=v=>'('+v.map(round).join(', ')+')';
+ const axes=['x','y','z'],round=n=>Math.abs(n)<.0000005?'0':Number(n.toFixed(4)).toString(),num=n=>n<-.0000005?mo('−')+'<mn>'+round(-n)+'</mn>':'<mn>'+round(n)+'</mn>',text=s=>'<mtext>'+M.esc(s)+'</mtext>',tuple=v=>'('+v.map(round).join(', ')+')';
  const vec=(v,unit='')=>v.map((n,i)=>(i?mo('+'):'')+mo('(')+num(n)+mo(')')+mi(['i','j','k'][i])).join('')+text(unit?' '+unit:'');
  const fields=(id,title,unit,values)=>`<fieldset><legend>${title} · ${unit}</legend><div class="coordinate-row">${axes.map((axis,i)=>`<label>${axis}<input id="${id}${i}" type="number" step="any" min="-10000" max="10000" value="${values[i]}"></label>`).join('')}</div></fieldset>`;
  function read(ids){const groups=ids.map(id=>axes.map((_,i)=>$(id+i).value));if(groups.flat().some(v=>v.trim()===''||!Number.isFinite(Number(v))||Math.abs(Number(v))>10000))throw Error('Enter every component as a finite number between −10,000 and 10,000.');return groups.map(group=>group.map(Number));}
