@@ -88,5 +88,10 @@
   }
   if(p.id==='couples-spacing')attach(0,[{...arrow(zero,[.6,0,0],'d = 0.600 m','#d6b6ff'),derived:true,rightAngle:{origin:[.6,0,0],first:[-1,0,0],second:[0,1,0]}}]);
  }
+ for(const p of D.problems){
+  const firstNumeric=Math.max(0,p.steps.findIndex(s=>s.fields)),gates={resultants:[1,1],position:[0,0,1],projection:[0,0,1,3],moments:[1,3],axis:[2,3,1],couples:[1,2,2]}[p.id];
+  p.graph.items.forEach((item,i)=>item.measurementStep=gates?.[i]??firstNumeric);
+  p.steps.forEach((step,i)=>(step.reveals||[]).forEach(item=>item.measurementStep=i));
+ }
  if(typeof module!=='undefined')module.exports=D;
 })(typeof window!=='undefined'?window:globalThis);

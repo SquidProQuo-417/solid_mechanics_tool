@@ -71,7 +71,7 @@ assert.ok(Math.hypot(Number(cableLine[3])-Number(cableLine[1]),Number(cableLine[
 console.log('Roadmap fit uses projected geometry, keeps the 3D vector visible, and omits irrelevant 40 m ticks.');
 
 const answerBeforeLayer=JSON.parse(storage.get('statics-roadmap-v1'))['position-distance'].answers;
-b.node('roadmapMeasurementToggle').onclick();assert.equal(b.node('roadmapMeasurements').hidden,false);
+if(b.node('roadmapMeasurements').hidden)b.node('roadmapMeasurementToggle').onclick();b.node('roadmapMeasureVector').value='2';b.node('roadmapMeasureVector').onchange();assert.equal(b.node('roadmapMeasurements').hidden,false);
 assert.equal(b.node('roadmapMeasurementToggle').attrs['aria-pressed'],'true');
 assert.ok(b.node('roadmapMeasurements').innerHTML.includes('<td>13</td>'));
 assert.ok(b.node('roadmapMeasurements').innerHTML.includes('Signed components'));
@@ -95,3 +95,18 @@ b.context.GuidedRoadmap.open('resultants');b.context.GuidedRoadmap.selectProblem
 for(const [i,f] of D.problems[0].steps[1].fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('>103.9230485</span>'));
 const finalStep=D.problems.find(p=>p.id==='resultants-triangle').steps[0];assert.ok(D.correct(finalStep,{0:'218'}));assert.ok(!D.correct(finalStep,{0:'219'}));
 console.log('Derived arms appear only after valid checks and disappear on edits; numerical feedback uses 10/3 significant figures and accepts rounded final results.');
+
+b.context.GuidedRoadmap.open('moments');b.context.GuidedRoadmap.selectProblem('moments-scalar');b.node('roadmapRestart').onclick();
+assert.ok(!b.node('roadmap').innerHTML.includes('id="roadmapMeasurementToggle"'));
+assert.ok(!b.node('roadmapDiagram-moments-scalar').innerHTML.includes('plane-measurement'));
+b.node('roadmapGraphView').value='iso';b.node('roadmapGraphView').onchange();
+const displacementStep=D.problems.find(p=>p.id==='moments-scalar').steps[0];for(const [i,f] of displacementStep.fields.entries()){const input=b.query('[data-roadmap-field]')[i];input.value=String(f.value);input.oninput();}
+b.node('roadmapCheck').onclick();assert.ok(b.node('roadmap').innerHTML.includes('id="roadmapMeasurementToggle"'));
+assert.equal(b.node('roadmapMeasurements').hidden,false);
+const colored=b.node('roadmapDiagram-moments-scalar').innerHTML;
+assert.ok(colored.includes('marker-end="url(#roadmapDiagram-moments-scalarPlaneArrow)"'));
+assert.ok(colored.includes('fill="#d6b6ff"/></marker>'));
+b.query('[data-roadmap-field]')[0].value='99';b.query('[data-roadmap-field]')[0].oninput();
+assert.equal(b.node('roadmapMeasurements').hidden,true);assert.equal(b.node('roadmapEarnedControls').hidden,true);
+assert.ok(!b.node('roadmapDiagram-moments-scalar').innerHTML.includes('plane-measurement'));
+console.log('Measurements unlock and show after checked steps, relock on edits, and use matching purple projection arrowheads.');
