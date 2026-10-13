@@ -37,7 +37,7 @@
   $('momentRotation').textContent=m.magnitude<1e-10?'Zero moment: the force is zero or its line of action passes through O.':m.components[0]===0&&m.components[1]===0?`Mz = ${E.round(m.components[2])} N·m: ${m.components[2]>0?'counterclockwise (+z)':'clockwise (−z)'} when viewed from +z toward the xy plane.`:'The 3D moment direction follows the right-hand rule; inspect its signed Cartesian components.';
   const items=[{start:origin,end:P,color:'#8cbcff',label:'P / rOP',arrow:true}];
   if(m.forceUnit){items.push({start:P.map((v,i)=>v-m.forceUnit[i]*length),end:P.map((v,i)=>v+m.forceUnit[i]*length),color:'#617384',label:'force line',dashed:true},{start:origin,end:H,color:'#efbd77',label:'d / foot H',dashed:true},{start:P,end:P.map((v,i)=>v+m.forceUnit[i]*length*.6),color:'#b4f178',label:'F (direction)',arrow:true});}
-  if(m.direction)items.push({start:origin,end:m.direction.map(v=>v*length*.6),color:'#d3a0ee',label:'MO (direction)',arrow:true});E.diagram('momentDiagram',state.view,items);
+  if(m.direction)items.push({start:origin,end:m.direction.map(v=>v*length*.6),color:'#d3a0ee',label:'MO (direction)',arrow:true});E.diagram('momentDiagram',state.view,items,[{origin:[0,0,0],first:m.r,second:state.F,label:'θ: r to F'}]);
  }
  function sync(){E.sync('momentO',state.O);E.sync('momentP',state.P);E.sync('momentF',state.F);$('momentView').value=state.view;}
  for(const id of ['momentO','momentP','momentF'])E.axes.forEach((_,i)=>$(id+i).addEventListener('input',()=>{try{[state.O,state.P,state.F]=E.read(['momentO','momentP','momentF']);render();}catch(e){$('momentError').textContent=e.message;}}));

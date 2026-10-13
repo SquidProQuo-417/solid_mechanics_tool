@@ -7,12 +7,13 @@ const Engineering=(()=>{
  function sync(id,values){values.forEach((value,i)=>$(id+i).value=value);}
  function row(index,title,context,formula,explanation){return `<div class="step" data-equation="${context}"><div class="step-title"><span>${String(index).padStart(2,'0')}</span>${title}</div><div class="math">${formula}</div><p>${explanation}</p></div>`;}
  function symbols(items,formulas,cards){Object.assign(Learning.symbols,items);Learning.formulas={...Learning.formulas,...formulas};Learning.cards.push(...cards);renderReference();}
- function diagram(id,view,items){
+ function diagram(id,view,items,angles=[]){
   const pair={xy:[0,1],xz:[0,2],yz:[1,2]}[view],project=p=>pair?[p[pair[0]],p[pair[1]]]:[.866*(p[0]-p[1]),p[2]-.5*(p[0]+p[1])],fitExtent=Math.max(1,...items.flatMap(item=>[...item.start,...item.end].map(Math.abs)))*1.15;
-  const units=id==='projectionDiagram'?'N':id==='examCalculationDiagram'&&items.some(item=>item.label==='A')?'N':'m',fitScale=140/(fitExtent*(pair?1:1.732)),frame=GraphScales.frame(id,view,{scale:fitScale,offsetX:300,offsetY:200,extent:fitExtent},()=>diagram(id,view,items),units),extent=frame.extent,screen=p=>{const q=project(p);return [frame.offsetX+q[0]*frame.scale,frame.offsetY-q[1]*frame.scale];},origin=screen([0,0,0]);
+  const units=id==='projectionDiagram'?'N':id==='examCalculationDiagram'&&items.some(item=>item.label==='A')?'N':'m',fitScale=140/(fitExtent*(pair?1:1.732)),frame=GraphScales.frame(id,view,{scale:fitScale,offsetX:300,offsetY:200,extent:fitExtent},()=>diagram(id,view,items,angles),units),extent=frame.extent,screen=p=>{const q=project(p);return [frame.offsetX+q[0]*frame.scale,frame.offsetY-q[1]*frame.scale];},origin=screen([0,0,0]);
   let output='<rect width="600" height="400" fill="#141b24"/><defs>'+items.map((item,i)=>`<marker id="${id}Arrow${i}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="${item.color}"/></marker>`).join('')+'</defs>';
   output+=GraphScales.axesSVG(view,screen,extent,units);
   items.forEach((item,i)=>{const a=screen(item.start),b=screen(item.end),zero=Math.hypot(...item.end.map((v,j)=>v-item.start[j]))<1e-10;output+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${item.color}" stroke-width="${item.dashed?1.5:3}" ${item.dashed?'stroke-dasharray="5 5"':''} ${item.arrow&&!zero?`marker-end="url(#${id}Arrow${i})"`:''}/><circle cx="${b[0]}" cy="${b[1]}" r="3" fill="${item.color}"/><text x="${b[0]+10}" y="${b[1]+(i%2?-10:18)}" fill="${item.color}" font-size="12">${M.esc(item.label)}</text>`;});
+  for(const angle of angles)output+=GraphScales.spatialAngle(screen,angle.origin,angle.first,angle.second,extent*.18,angle.label);if(view==='iso'&&angles.length)output+='<text x="12" y="390" fill="#b9c7d8" font-size="11">Angle values are true 3D angles; arcs are projected.</text>';
   output+=`<circle cx="${origin[0]}" cy="${origin[1]}" r="3" fill="#94a3b8"/><text x="${origin[0]-15}" y="${origin[1]+18}" fill="#94a3b8">0</text>`;GraphScales.paint($(id),output);
  }
  function practice({id,title,cases,targets,solution,hints}){
