@@ -129,3 +129,15 @@ console.log('Per-problem significant figures persist independently and across re
 
 for(const problem of D.problems.filter(p=>/\bP\s*=/.test(p.prompt))){b.context.GuidedRoadmap.open(problem.group);b.context.GuidedRoadmap.selectProblem(problem.id);const svg=b.node('roadmapDiagram-'+problem.id).innerHTML;assert.ok(svg.includes('data-point="P"'),problem.id);assert.ok(svg.includes('class="point-label"'),problem.id);}
 console.log('All roadmap prompts specifying P render a distinct named application-point marker.');
+
+b.context.GuidedRoadmap.open('moments');b.context.GuidedRoadmap.selectProblem('moments');b.node('roadmapReview').onclick();
+if(b.node('roadmapMeasurements').hidden)b.node('roadmapMeasurementToggle').onclick();
+assert.ok(b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+const checkedBeforeHide=JSON.parse(storage.get('statics-roadmap-v1')).moments.checked;
+b.node('roadmapMeasurementToggle').onclick();const hiddenLayer=b.node('roadmapDiagram-moments').innerHTML;
+assert.ok(!hiddenLayer.includes('right-angle-marker'));assert.ok(!hiddenLayer.includes('d = 1.34 m'));assert.ok(!hiddenLayer.includes('plane-measurement'));
+assert.ok(hiddenLayer.includes('data-point="P"'));
+assert.deepEqual(JSON.parse(storage.get('statics-roadmap-v1')).moments.checked,checkedBeforeHide);
+b.node('roadmapGraphView').value='iso';b.node('roadmapGraphView').onchange();assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+b.node('roadmapMeasurementToggle').onclick();assert.ok(b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
+console.log('Hide layer removes earned derived lines, labels and right-angle markers, preserves P and progress, and stays hidden on view changes.');
