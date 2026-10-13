@@ -4,7 +4,10 @@ let fit={scale:10,offsetX:300,offsetY:200,extent:10},current;const redraw=()=>cu
 fit={...fit,scale:20,extent:5};redraw();assert.equal(current.scale,10,'halving input values must not rescale the graph');
 let bar=nodes.get('testScaleControls');bar.children[0].onclick();assert.equal(current.scale,15);bar=nodes.get('testScaleControls');bar.children[1].onclick();assert.equal(current.scale,10);
 bar=nodes.get('testScaleControls');bar.children[2].onclick();assert.equal(current.scale,20);assert.equal(current.extent,5);
-bar=nodes.get('testScaleControls');bar.children[3].onclick();fit={...fit,scale:4,extent:25};redraw();assert.equal(current.scale,4);assert.ok(nodes.get('testScaleControls').children[4].textContent.includes('Auto-fit'));
+bar=nodes.get('testScaleControls');bar.children[3].onclick();fit={...fit,scale:4,extent:25};redraw();assert.equal(current.scale,4);assert.ok(nodes.get('testScaleControls').children[5].textContent.includes('Auto-fit'));
 assert.equal(G.frame('test','xy',{scale:30,extent:3},redraw,'N').scale,30,'views retain independent scales');
+const scaleBefore=current.scale;nodes.get('testScaleControls').children[4].onclick();assert.equal(current.scale,scaleBefore);assert.equal(nodes.get('testScaleControls').children[4].textContent,'Close expanded view');nodes.get('testScaleControls').children[4].onclick();assert.equal(nodes.get('testScaleControls').children[4].textContent,'Expand graph');
+assert.deepEqual(G.axisRange([300,200],[0,-10]),[-18.2,15.8]);assert.deepEqual(G.axisRange([300,200],[10,0]),[-28.8,28.8]);
+const texts=[0,1,2].map(()=>({attrs:{},classList:{contains:()=>false},getBBox:()=>({x:100,y:100,width:35,height:16}),setAttribute(k,v){this.attrs[k]=v;}}));G.layout({viewBox:{baseVal:{height:400}},querySelectorAll:()=>texts});assert.equal(new Set(texts.map(t=>t.attrs.transform)).size,3,'coincident labels move to separate positions');assert.ok(texts.every(t=>!t.attrs.visibility));
 const output=G.axesSVG('iso',p=>[300+(p[0]-p[1])*10,200-p[2]*10],10,'N');assert.ok(output.includes('Axis coordinates (N)'));for(const axis of ['x','y','z'])assert.ok(output.includes(axis+'='));assert.ok(!output.includes('NaN'));delete global.document;
 console.log('Locked scale, proportional arrow changes, zoom, fit, auto-fit, per-view scales and labelled 3D ticks passed.');
