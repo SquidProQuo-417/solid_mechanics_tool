@@ -141,3 +141,8 @@ assert.deepEqual(JSON.parse(storage.get('statics-roadmap-v1')).moments.checked,c
 b.node('roadmapGraphView').value='iso';b.node('roadmapGraphView').onchange();assert.ok(!b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
 b.node('roadmapMeasurementToggle').onclick();assert.ok(b.node('roadmapDiagram-moments').innerHTML.includes('right-angle-marker'));
 console.log('Hide layer removes earned derived lines, labels and right-angle markers, preserves P and progress, and stays hidden on view changes.');
+
+for(const problem of D.problems){b.context.GuidedRoadmap.open(problem.group);b.context.GuidedRoadmap.selectProblem(problem.id);b.node('roadmapRestart').onclick();const before=JSON.parse(storage.get('statics-roadmap-v1'))[problem.id];
+b.node('roadmapFullExampleToggle').onclick();assert.equal(b.node('roadmapFullExample').hidden,false);assert.equal(b.node('roadmapFullExampleToggle').attrs['aria-expanded'],'true');for(const step of problem.steps){assert.ok(b.node('roadmapFullExample').innerHTML.includes(step.title),problem.id);for(const row of step.worked)assert.ok(b.node('roadmapFullExample').innerHTML.includes(M.esc(row.text)),problem.id);}
+const after=JSON.parse(storage.get('statics-roadmap-v1'))[problem.id];assert.deepEqual(after.answers,before.answers);assert.deepEqual(after.checked,before.checked);assert.equal(after.index,before.index);assert.equal(b.node('roadmapNext').disabled,true);assert.ok(!b.node('roadmap').innerHTML.includes('id="roadmapMeasurementToggle"'));b.node('roadmapFullExampleToggle').onclick();assert.equal(b.node('roadmapFullExample').hidden,true);}
+console.log('All 33 full worked examples show every narrated stage without filling answers, checking steps, or unlocking measurements.');
