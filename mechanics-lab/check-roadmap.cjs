@@ -19,7 +19,7 @@ assert.equal(b.node('roadmapHint').hidden,false);
 assert.equal(b.node('roadmapHintToggle').textContent,'Hide hint');
 assert.equal(b.node('roadmapHintToggle').attrs['aria-expanded'],'true');
 assert.equal(b.node('roadmapNext').disabled,true);
-assert.equal(storage.get('statics-roadmap-v1'),beforeHint);
+const afterHint=JSON.parse(storage.get('statics-roadmap-v1'));assert.equal(afterHint.resultants.assisted,true);delete afterHint.resultants.assisted;assert.deepEqual(afterHint,JSON.parse(beforeHint));
 assert.equal(b.node('roadmapSolution').textContent,beforeSolution);
 b.node('roadmapHintToggle').onclick();assert.equal(b.node('roadmapHint').hidden,true);
 assert.equal(b.node('roadmapHintToggle').attrs['aria-expanded'],'false');
